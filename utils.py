@@ -45,16 +45,29 @@ def visualize(model, data, save=True):
     fake = model.y_fake.detach()
     real = model.y
     x = model.x
-    for i in range(3):
-        ax = plt.subplot(3, 3, i + 1)
+    fig = plt.figure(figsize=(10, 10))
+    for i in range(5):
+        ax = plt.subplot(5, 5, i + 1)
         ax.imshow(x[i].to('cpu').numpy().transpose(1, 2, 0))
         ax.axis("off")
-        ax = plt.subplot(3, 3, i + 1 + 3)
-        ax.imshow(fake[i].to('cpu').numpy().transpose(1, 2, 0))
+        ax.set_aspect('equal')
+        ax = plt.subplot(5, 5, i + 1 + 5)
+        ax.imshow(fake[i][:][:][0:3].to('cpu').numpy().transpose(1, 2, 0))
         ax.axis("off")
-        ax = plt.subplot(3, 3, i + 1 + 6)
-        ax.imshow(real[i].to('cpu').numpy().transpose(1, 2, 0))
+        ax.set_aspect('equal')
+        ax = plt.subplot(5, 5, i + 1 + 10)
+        ax.imshow(real[i][:][:][0:3].to('cpu').numpy().transpose(1, 2, 0))
         ax.axis("off")
+        ax.set_aspect('equal')
+        ax = plt.subplot(5, 5, i + 1 + 15)
+        ax.imshow(fake[i][:][:][3].to('cpu').numpy())
+        ax.axis("off")
+        ax.set_aspect('equal')
+        ax = plt.subplot(5, 5, i + 1 + 20)
+        ax.imshow(real[i][:][:][3].to('cpu').numpy())
+        ax.axis("off")
+        ax.set_aspect('equal')
+    fig.tight_layout()
     plt.show()
         
 def log_results(loss_meter_dict):

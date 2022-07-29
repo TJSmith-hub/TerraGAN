@@ -139,10 +139,10 @@ class MainModel(nn.Module):
         self.lambda_L1 = lambda_L1
         
         if net_G is None:
-            self.net_G = init_model(Unet(input_c=3, output_c=3, n_down=8, num_filters=64), self.device)
+            self.net_G = init_model(Unet(input_c=3, output_c=4, n_down=8, num_filters=64), self.device)
         else:
             self.net_G = net_G.to(self.device)
-        self.net_D = init_model(PatchDiscriminator(input_c=3, n_down=3, num_filters=64), self.device)
+        self.net_D = init_model(PatchDiscriminator(input_c=4, n_down=4, num_filters=64), self.device)
         self.GANcriterion = GANLoss(gan_mode='vanilla').to(self.device)
         self.L1criterion = nn.L1Loss()
         self.opt_G = optim.Adam(self.net_G.parameters(), lr=lr_G, betas=(beta1, beta2))

@@ -1,0 +1,15 @@
+artifact_uri: ./mlruns/0/44352f7652104f6a8290d478995b9699/artifacts
+end_time: 1659047974101
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: 44352f7652104f6a8290d478995b9699
+run_uuid: 44352f7652104f6a8290d478995b9699
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1659047887896
+status: 4
+tags: []
+user_id: tobys

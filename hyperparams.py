@@ -1,7 +1,6 @@
 TRAIN_PARAMS = {
     'train_path': 'dataset/data_train',
-    'val_path': 'dataset/data_val',
-    'img_size': 256,
+    'img_size': 512,
     'batch_size': 16,
     'n_workers': 8,
     'pin_memory': True,
