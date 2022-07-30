@@ -3,6 +3,7 @@ import numpy as np
 import torch
 from skimage.color import rgb2lab, lab2rgb
 import time
+import mlflow
 
 class AverageMeter:
     def __init__(self):
@@ -36,7 +37,7 @@ def update_losses(model, loss_meter_dict, count):
         loss = getattr(model, loss_name)
         loss_meter.update(loss.item(), count=count)
     
-def visualize(model, data, save=True):
+def visualize(model, data):
     model.net_G.eval()
     with torch.no_grad():
         model.setup_input(data)
@@ -69,6 +70,7 @@ def visualize(model, data, save=True):
         ax.set_aspect('equal')
     fig.tight_layout()
     plt.show()
+    return fig
         
 def log_results(loss_meter_dict):
     for loss_name, loss_meter in loss_meter_dict.items():

@@ -6,8 +6,8 @@ from attrdict import AttrDict
 import torch
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader
-from hyperparams import TRAIN_PARAMS
-cfg = AttrDict(TRAIN_PARAMS)
+import hyperparams
+cfg = AttrDict(hyperparams.UNET_GAN_PARAMS)
 
 class TerrainData(torch.utils.data.Dataset):
     def __init__(self, path, sourceTransform):
