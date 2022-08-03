@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/tobys/Documents/TerraGAN/mlruns/0/400206e527e54ea5be1df5d4442e6938/artifacts
+end_time: 1659453679579
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: 400206e527e54ea5be1df5d4442e6938
+run_uuid: 400206e527e54ea5be1df5d4442e6938
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1659448914367
+status: 3
+tags: []
+user_id: tobys

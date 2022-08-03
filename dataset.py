@@ -26,10 +26,10 @@ class TerrainData(torch.utils.data.Dataset):
         rgb = cv2.imread(self.rgbdata[idx])
         rgb = cv2.resize(rgb, (cfg.img_size, cfg.img_size))
         rgbh = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGBA)
-        height = cv2.imread(self.heightdata[idx], cv2.IMREAD_GRAYSCALE)
+        height = cv2.imread(self.heightdata[idx], cv2.IMREAD_GRAYSCALE, )
         height = cv2.resize(height, (cfg.img_size, cfg.img_size))
         label = cv2.imread(self.segdata[idx])
-        label = cv2.resize(label, (cfg.img_size, cfg.img_size))
+        label = cv2.resize(label, (cfg.img_size, cfg.img_size), interpolation=cv2.INTER_NEAREST)
         label = cv2.cvtColor(label, cv2.COLOR_BGR2RGB)
 
         #if self.sourceTransform:

@@ -42,7 +42,7 @@ class UnetBlock(nn.Module):
             return torch.cat([x, self.model(x)], 1)
 
 class UNet(nn.Module):
-    def __init__(self, input_c=1, output_c=2, n_down=8, num_filters=64):
+    def __init__(self, input_c, output_c, n_down, num_filters):
         super().__init__()
         unet_block = UnetBlock(num_filters * 8, num_filters * 8, innermost=True)
         for _ in range(n_down - 5):

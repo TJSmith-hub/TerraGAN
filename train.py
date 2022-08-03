@@ -1,6 +1,7 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
+from sqlalchemy import false
 import torch
 from attrdict import AttrDict
 from utils import *
@@ -31,7 +32,7 @@ def train_model(model, train_dl, epochs, display_every, save_fig_every):
             model.optimize()
             update_losses(model, loss_meter_dict, count=data['x'].size(0)) # function updating the log objects
             i += 1
-        fig = visualize(model, data) # function displaying the model's outputs
+        fig = visualize(model, data, show=False) # function displaying the model's outputs
         if e % save_fig_every == 0:
             mlflow.log_figure(fig, 'epoch'+str(e+1)+'.jpg') # log figure
         mlflow.log_metrics(get_results_dict(loss_meter_dict), step=e) # log losses to mlflow
@@ -42,8 +43,8 @@ def main():
     print("Loading data...")
     train_dl = make_dataloader(cfg.train_path, cfg.batch_size, cfg.n_workers, cfg.pin_memory)
     
-    model = MainModel(net_G='unet', lr_G=cfg.lr_G, lr_D=cfg.lr_D, beta1=cfg.beta1, beta2=cfg.beta2, lambda_L1=cfg.lambda_L1)
-
+    model = MainModel(net_G='old_unet', lr_G=cfg.lr_G, lr_D=cfg.lr_D, beta1=cfg.beta1, beta2=cfg.beta2, lambda_L1=cfg.lambda_L1)
+    print(model)
     with mlflow.start_run():
         
         mlflow.log_params(cfg)
@@ -51,7 +52,7 @@ def main():
         print("Training model...")
         train_model(model, train_dl, cfg.epochs, cfg.display_every, cfg.save_fig_every)
         
-        #mlflow.pytorch.log_model(model, "model")
+        mlflow.pytorch.log_model(model, "model")
 
 # %%
 if __name__ == "__main__":  
