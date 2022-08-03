@@ -13,17 +13,17 @@ cfg = AttrDict(hyperparams.UNET_GAN_PARAMS)
     
 
 class PatchDiscriminator(nn.Module):
-    def __init__(self, input_c, num_filters=64, n_down=3):
+    def __init__(self, input_c, n_down, num_filters):
         super().__init__()
         model = [self.get_layers(input_c, num_filters, norm=False)]
-        model += [self.get_layers(num_filters * 2 ** i, num_filters * 2 ** (i + 1), s=1 if i == (n_down-1) else 2) 
-        for i in range(n_down)] # the 'if' statement is taking care of not using
+        for i in range(n_down):
+            model += [self.get_layers(num_filters * 2 ** i, num_filters * 2 ** (i + 1), s=1 if i == (n_down-1) else 2)] # the 'if' statement is taking care of not using
                                                   # stride of 2 for the last block in this loop
         model += [self.get_layers(num_filters * 2 ** n_down, 1, s=1, norm=False, act=False)] # Make sure to not use normalization or
                                                                                              # activation for the last layer of the model
         self.model = nn.Sequential(*model)                                                   
         
-    def get_layers(self, ni, nf, k=4, s=2, p=1, norm=True, act=True): # when needing to make some repeatitive blocks of layers,
+    def get_layers(self, ni, nf, k=3, s=2, p=1, norm=True, act=True): # when needing to make some repeatitive blocks of layers,
         layers = [nn.Conv2d(ni, nf, k, s, p, bias=not norm)]          # it's always helpful to make a separate method for that purpose
         if norm: layers += [nn.BatchNorm2d(nf)]
         if act: layers += [nn.LeakyReLU(0.2, True)]
@@ -90,11 +90,11 @@ class MainModel(nn.Module):
         self.lambda_L1 = lambda_L1
         
         if net_G == 'old_unet':
-            self.net_G = init_model(old_unet_g.UNet(input_c=cfg.input_c_G, output_c=cfg.output_c_G, n_down=cfg.n_down_G, num_filters=cfg.n_filters_G), self.device)
+            self.net_G = init_model(old_unet_g.UNet(cfg.input_c_G, cfg.output_c_G, cfg.n_down_G, cfg.n_filters_G), self.device)
         elif net_G == 'unet':
             self.net_G = init_model(unet_g.UNet(cfg.input_c_G, cfg.output_c_G), self.device)
             
-        self.net_D = init_model(PatchDiscriminator(input_c=cfg.input_c_D, n_down=cfg.n_down_D, num_filters=cfg.n_filters_D), self.device)
+        self.net_D = init_model(PatchDiscriminator(cfg.input_c_D, cfg.n_down_D, cfg.n_filters_D), self.device)
         self.GANcriterion = GANLoss(gan_mode='vanilla').to(self.device)
         self.L1criterion = nn.L1Loss()
         self.opt_G = optim.Adam(self.net_G.parameters(), lr=lr_G, betas=(beta1, beta2))
@@ -112,15 +112,18 @@ class MainModel(nn.Module):
         self.y_fake = self.net_G(self.x)
     
     def backward_D(self):
-        fake_preds = self.net_D(self.y_fake.detach())
+        fake_cat = torch.cat((self.x, self.y_fake), 1)
+        fake_preds = self.net_D(fake_cat.detach())
         self.loss_D_fake = self.GANcriterion(fake_preds, False)
-        real_preds = self.net_D(self.y)
+        real_cat = torch.cat((self.x, self.y), 1)
+        real_preds = self.net_D(real_cat)
         self.loss_D_real = self.GANcriterion(real_preds, True)
         self.loss_D = (self.loss_D_fake + self.loss_D_real) * 0.5
         self.loss_D.backward()
     
     def backward_G(self):
-        fake_preds = self.net_D(self.y_fake)
+        fake_cat = torch.cat((self.x, self.y_fake), 1)
+        fake_preds = self.net_D(fake_cat)
         self.loss_G_GAN = self.GANcriterion(fake_preds, True)
         self.loss_G_L1 = self.L1criterion(self.y_fake, self.y) * self.lambda_L1
         self.loss_G = self.loss_G_GAN + self.loss_G_L1
