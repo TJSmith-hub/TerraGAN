@@ -1,7 +1,7 @@
 UNET_GAN_PARAMS = {
     # dataset and data loader
     'train_path': 'dataset/data_train',
-    'img_size': 128,
+    'img_size': 256,
     'batch_size': 25,
     'n_workers': 6,
     'pin_memory': True,
