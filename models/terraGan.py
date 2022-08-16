@@ -69,7 +69,7 @@ class MainModel(nn.Module):
         
     def setup_input(self, data):
         self.x = data['x'].to(self.device)
-        self.y = data['y'].to(self.device)
+        self.y = torch.cat((data['yt'], data['yh']), 1).to(self.device) 
         
     def forward(self):
         self.y_fake = self.net_G(self.x)

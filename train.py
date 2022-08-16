@@ -1,7 +1,6 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
-from sqlalchemy import false
 import torch
 from attrdict import AttrDict
 from utils import *
@@ -22,21 +21,24 @@ import mlflow.pytorch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def train_model(model, train_dl, epochs, display_every, save_fig_every):
-    data = next(iter(train_dl)) # getting a batch for visualizing the model output after fixed intrvals
+    i = 0
     for e in range(epochs):
         print('Epoch: {}'.format(e+1))
         loss_meter_dict = create_loss_meters() # function returing a dictionary of objects to 
-        i = 0                                  # log the losses of the complete network
         for data in tqdm(train_dl):
             model.setup_input(data) 
             model.optimize()
             update_losses(model, loss_meter_dict, count=data['x'].size(0)) # function updating the log objects
+            if i % display_every == 0:
+                mlflow.log_metrics(get_results_dict(loss_meter_dict), step=i)
             i += 1
-        fig = visualize(model, data, show=False) # function displaying the model's outputs
-        if e % save_fig_every == 0:
+        if e % save_fig_every - 1 == 0:
+            fig = visualize(model, data, show=False) # function displaying the model's outputs
             mlflow.log_figure(fig, 'epoch'+str(e+1)+'.jpg') # log figure
-        mlflow.log_metrics(get_results_dict(loss_meter_dict), step=e) # log losses to mlflow
-        log_results(loss_meter_dict) # function to print out the losses
+            plt.clf()
+        #mlflow.log_metrics(get_results_dict(loss_meter_dict), step=i) # log losses to mlflow
+        #log_results(loss_meter_dict) # function to print out the losses
+    #mlflow.log_metrics(get_results_dict(loss_meter_dict), step=e) # log losses to mlflow
 
 def main():
     mlflow.set_experiment(experiment_name="Unet Generator")

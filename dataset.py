@@ -25,22 +25,18 @@ class TerrainData(torch.utils.data.Dataset):
             idx = idx.tolist()
         rgb = cv2.imread(self.rgbdata[idx])
         rgb = cv2.resize(rgb, (cfg.img_size, cfg.img_size))
-        rgbh = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGBA)
-        height = cv2.imread(self.heightdata[idx], cv2.IMREAD_GRAYSCALE, )
+        rgb = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB)
+        height = cv2.imread(self.heightdata[idx], cv2.IMREAD_GRAYSCALE)
         height = cv2.resize(height, (cfg.img_size, cfg.img_size))
         label = cv2.imread(self.segdata[idx])
         label = cv2.resize(label, (cfg.img_size, cfg.img_size), interpolation=cv2.INTER_NEAREST)
         label = cv2.cvtColor(label, cv2.COLOR_BGR2RGB)
-
-        #if self.sourceTransform:
-            #image = self.sourceTransform(image)
             
-        rgbh[:,:,3] = height
-            
-        rgbh = transforms.ToTensor()(np.uint8(rgbh))
+        rgb = transforms.ToTensor()(np.uint8(rgb))
+        height = transforms.ToTensor()(np.uint8(height))
         label = transforms.ToTensor()(np.uint8(label))
 
-        return {'x':label, 'y': rgbh}
+        return {'x':label, 'yt': rgb, 'yh':height}
     
 def make_dataloader(path, batch_size, n_workers, pin_memory): # A handy function to make our dataloaders
     dataset = TerrainData(path, None)
