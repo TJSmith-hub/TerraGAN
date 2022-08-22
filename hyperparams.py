@@ -1,8 +1,8 @@
 UNET_GAN_PARAMS = {
     # dataset and data loader
     'train_path': 'dataset/data_train',
-    'img_size': 128,
-    'batch_size': 25,
+    'img_size': 64,
+    'batch_size': 50,
     'n_workers': 6,
     'pin_memory': True,
     
@@ -17,13 +17,13 @@ UNET_GAN_PARAMS = {
     'lambda_L1': 1,
     
     # generator
-    'input_c_G': 3,
+    'input_c_G': 1,
     'output_c_G': 4,
     'n_down_G': 4,
     'n_filters_G': 64,
     
     # discriminator
-    'input_c_D': 7,
+    'input_c_D': 5,
     'n_down_D': 5,
     'n_filters_D': 64,
 }
