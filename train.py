@@ -45,7 +45,7 @@ def main():
     print("Loading data...")
     train_dl = make_dataloader(cfg.train_path, cfg.img_size, cfg.batch_size, cfg.n_workers, cfg.pin_memory)
     
-    model = MainModel(net_G='unet', lr_G=cfg.lr_G, lr_D=cfg.lr_D, beta1=cfg.beta1, beta2=cfg.beta2, lambda_L1=cfg.lambda_L1)
+    model = MainModel(lr_G=cfg.lr_G, lr_D=cfg.lr_D, beta1=cfg.beta1, beta2=cfg.beta2, lambda_L1=cfg.lambda_L1)
     print(model)
     with mlflow.start_run():
         

@@ -4,7 +4,6 @@ from torch import nn, optim
 
 import models.unet_g as old_unet_g
 import models.unet_generator as unet_g
-import spade.models.generator as SPADE_G
 from models.descriminator import PatchDiscriminator
 from models.ganloss import GANLoss
 
@@ -40,22 +39,14 @@ def init_model(model, device):
     return model
     
 class MainModel(nn.Module):
-    def __init__(self, net_G=None, lr_G=2e-4, lr_D=2e-4, 
+    def __init__(self, lr_G=2e-4, lr_D=2e-4, 
                  beta1=0.5, beta2=0.999, lambda_L1=100.):
         super().__init__()
         
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.lambda_L1 = lambda_L1
         
-        if net_G == 'unet':
-            self.net_G = init_model(unet_g.UNet(cfg.input_c_G, cfg.output_c_G, cfg.n_down_G, cfg.n_filters_G), self.device)
-        elif net_G == 'old_unet':
-            self.net_G = init_model(old_unet_g.UNet(cfg.input_c_G, cfg.output_c_G), self.device)
-        elif net_G == 'spade':
-            from spade.args import get_parser
-            parser = get_parser()
-            args, _ = parser.parse_known_args()
-            self.net_G = init_model(SPADE_G.SPADEGenerator(args), self.device)
+        self.net_G = init_model(unet_g.UNet(cfg.input_c_G, cfg.output_c_G, cfg.n_down_G, cfg.n_filters_G), self.device)
             
         self.net_D = init_model(PatchDiscriminator(cfg.input_c_D, cfg.n_down_D, cfg.n_filters_D), self.device)
         self.GANcriterion = GANLoss(gan_mode='vanilla').to(self.device)
@@ -71,6 +62,12 @@ class MainModel(nn.Module):
         self.x = data['x'].to(self.device)
         self.y = torch.cat((data['yt'], data['yh']), 1).to(self.device) 
         #self.y = data['yh'].to(self.device)
+    
+    def setup_test(self, data):
+        self.x = data.to(self.device)
+    
+    def get_output(self):
+        return self.y_fake
         
     def forward(self):
         self.y_fake = self.net_G(self.x)
