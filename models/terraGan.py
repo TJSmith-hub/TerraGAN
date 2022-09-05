@@ -47,8 +47,8 @@ class MainModel(nn.Module):
         self.lambda_L1 = lambda_L1
         
         self.net_G = init_model(unet_g.UNet(cfg.input_c_G, cfg.output_c_G, cfg.n_down_G, cfg.n_filters_G), self.device)
-            
         self.net_D = init_model(PatchDiscriminator(cfg.input_c_D, cfg.n_down_D, cfg.n_filters_D), self.device)
+        
         self.GANcriterion = GANLoss(gan_mode='vanilla').to(self.device)
         self.L1criterion = nn.L1Loss()
         self.opt_G = optim.Adam(self.net_G.parameters(), lr=lr_G, betas=(beta1, beta2))

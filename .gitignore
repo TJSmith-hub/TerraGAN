@@ -1,4 +1,6 @@
 __pycache__/
 dataset/
 mlruns/
-spade/
+test_fake/
+test_real/
+test_segs/
