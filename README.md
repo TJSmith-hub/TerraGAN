@@ -1,6 +1,6 @@
 # TerraGAN
 
-This is a condistional GAN model trained to generate 3D terrain using an input segmentation map. Architecture consists of a U-Net generator and a PatchGAN discriminator. Built using Pytorch and monitored using MLFlow.
+This is a conditional GAN model trained to generate 3D terrain using an input segmentation map. Architecture consists of a U-Net generator and a PatchGAN discriminator. Built using Pytorch and monitored using MLFlow.
 
 Submission for University of Lincoln MSc Intelligent Vision Thesis 2022.
 
